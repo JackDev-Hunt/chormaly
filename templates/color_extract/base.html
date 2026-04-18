@@ -1,0 +1,403 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Chromaly - Color Extractor{% endblock %}</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    {% load static %}
+    <style>
+        * { font-family: 'Inter', sans-serif; }
+        
+        .color-preview {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+            display: inline-block;
+            margin-right: 10px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        
+        .gradient-bg {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        
+        .fade-in {
+            animation: fadeIn 0.5s ease-in;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .logo {
+            transition: all 0.3s ease;
+        }
+        
+        .logo:hover {
+            transform: rotate(5deg) scale(1.05);
+        }
+        
+        /* Centered Modal Toast Styles */
+        .modal-toast {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(4px);
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: fadeInModal 0.2s ease-out;
+        }
+        
+        @keyframes fadeInModal {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        .modal-toast-content {
+            animation: modalPop 0.3s ease-out;
+            max-width: 90%;
+            width: 400px;
+        }
+        
+        @keyframes modalPop {
+            from {
+                transform: scale(0.9);
+                opacity: 0;
+            }
+            to {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+        
+        .modal-toast-success { background: linear-gradient(135deg, #10b981, #059669); }
+        .modal-toast-error { background: linear-gradient(135deg, #ef4444, #dc2626); }
+        .modal-toast-info { background: linear-gradient(135deg, #3b82f6, #2563eb); }
+        
+        /* Navbar Link Hover Effect */
+        .nav-link {
+            position: relative;
+            transition: all 0.3s ease;
+        }
+        
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            bottom: -4px;
+            left: 50%;
+            background: white;
+            transition: all 0.3s ease;
+            transform: translateX(-50%);
+        }
+        
+        .nav-link:hover::after {
+            width: 80%;
+        }
+        
+        /* Footer Social Icons */
+        .social-icon {
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.1);
+        }
+        
+        .social-icon:hover {
+            background: rgba(255,255,255,0.2);
+            transform: translateY(-3px);
+        }
+        
+        /* Color card hover effect */
+        .color-card {
+            transition: all 0.2s ease;
+        }
+        
+        .color-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+        
+        /* Progress bar animation */
+        .progress-bar {
+            transition: width 0.05s linear;
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-gray-50 to-gray-100">
+    
+    <!-- Centered Modal Toast Container -->
+    <div id="modalToast" class="modal-toast hidden">
+        <div class="modal-toast-content rounded-2xl shadow-2xl overflow-hidden">
+            <div id="modalToastBg" class="p-6">
+                <div class="flex items-center gap-4 mb-4">
+                    <div id="modalToastIcon" class="text-white text-3xl">✅</div>
+                    <div class="flex-1">
+                        <p id="modalToastMessage" class="text-white font-bold text-lg">Color copied!</p>
+                        <p id="modalToastSubMessage" class="text-white/80 text-sm mt-1"></p>
+                    </div>
+                    <button onclick="closeModalToast()" class="text-white/70 hover:text-white transition text-2xl leading-none">
+                        &times;
+                    </button>
+                </div>
+                <div class="mt-3">
+                    <div class="h-1.5 bg-white/30 rounded-full overflow-hidden">
+                        <div id="modalToastProgress" class="h-full bg-white rounded-full progress-bar" style="width: 100%;"></div>
+                    </div>
+                </div>
+                <button onclick="closeModalToast()" class="mt-4 w-full bg-white/20 hover:bg-white/30 text-white font-semibold py-2.5 rounded-xl transition-all duration-200 text-sm">
+                    Got it
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Enhanced Navbar -->
+    <nav class="gradient-bg text-white shadow-2xl relative overflow-hidden">
+        <div class="absolute inset-0 bg-white/5 transform -skew-y-6"></div>
+        
+        <div class="container mx-auto px-6 py-5 relative z-10">
+            <div class="flex justify-between items-center">
+                <!-- Logo Section -->
+                <div class="flex items-center space-x-4">
+                    <div class="logo">
+                        <img src="{% static 'images/colorsift.png' %}" 
+                             alt="Chromaly Logo" 
+                             class="w-12 h-12 rounded-full bg-white p-2 shadow-lg"
+                             onerror="this.src='https://img.icons8.com/color/96/000000/color-wheel.png'">
+                    </div>
+                    <div class="flex flex-col">
+                        <div class="flex items-center space-x-2">
+                            <h1 class="text-3xl font-extrabold tracking-tight bg-gradient-to-r from-white to-indigo-200 bg-clip-text text-transparent"><a href="{% url 'home' %}">Chromaly</a></h1>
+                            <span class="text-sm bg-white/20 px-2 py-1 rounded-full">Beta</span>
+                        </div>
+                        <p class="text-xs text-indigo-200 mt-0.5">Color Intelligence Platform</p>
+                    </div>
+                </div>
+                
+                <!-- Navigation Links -->
+                <div class="flex items-center space-x-8">
+                    <a href="{% url 'home' %}" class="nav-link font-medium transition hover:text-indigo-200">Home</a>
+                    <a href="{% url 'about' %}" class="nav-link font-medium transition hover:text-indigo-200">About</a>
+                    <button class="bg-white/20 backdrop-blur-sm px-5 py-2 rounded-full text-sm font-semibold hover:bg-white/30 transition-all duration-300 hover:scale-105">
+                        <a href="https://github.com/Jakariaofficial/Jakariaofficial" target="_blank" class="text-white no-underline">⭐ Star on GitHub</a>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Messages -->
+    {% if messages %}
+    <div class="container mx-auto px-6 mt-4">
+        {% for message in messages %}
+        <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
+            <span class="block sm:inline">{{ message }}</span>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <!-- Main Content -->
+    <main class="container mx-auto px-6 py-12 fade-in">
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Enhanced Professional Footer -->
+    <footer class="bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 text-white mt-2">
+        <!-- Main Footer Content -->
+        <div class="container mx-auto px-6 py-12">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+                <!-- Brand Column -->
+                <div class="space-y-3">
+                    <div class="flex items-center space-x-2">
+                        <div class="w-8 h-8 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-lg flex items-center justify-center">
+                            <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21a4 4 0 01-4-4V5a2 2 0 012-2h4a2 2 0 012 2v12a4 4 0 01-4 4zm0 0h12a2 2 0 002-2v-4a2 2 0 00-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 012.828 0l2.829 2.829a2 2 0 010 2.828l-8.486 8.485M7 17h.01"></path>
+                            </svg>
+                        </div>
+                        <h3 class="text-xl font-bold">Jack Dev</h3>
+                    </div>
+                    <p class="text-gray-400 text-sm leading-relaxed">
+                        Professional color extraction tool built with modern web technologies. Extract, analyze, and manage colors from any HTML or CSS file.
+                    </p>
+                    <div class="flex space-x-3 pt-2">
+                        <a href="#" class="social-icon">
+                            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M22 12c0-5.523-4.477-10-10-10S2 6.477 2 12c0 4.991 3.657 9.128 8.438 9.878v-6.987h-2.54V12h2.54V9.797c0-2.506 1.492-3.89 3.777-3.89 1.094 0 2.238.195 2.238.195v2.46h-1.26c-1.243 0-1.63.771-1.63 1.562V12h2.773l-.443 2.89h-2.33v6.988C18.343 21.128 22 16.991 22 12z"/>
+                            </svg>
+                        </a>
+                        <a href="#" class="social-icon">
+                            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M23.953 4.57a10 10 0 01-2.825.775 4.958 4.958 0 002.163-2.723c-.951.555-2.005.959-3.127 1.184a4.92 4.92 0 00-8.384 4.482C7.69 8.095 4.067 6.13 1.64 3.162a4.822 4.822 0 00-.666 2.475c0 1.71.87 3.213 2.188 4.096a4.904 4.904 0 01-2.228-.616v.06a4.923 4.923 0 003.946 4.827 4.996 4.996 0 01-2.212.085 4.936 4.936 0 004.604 3.417 9.867 9.867 0 01-6.102 2.105c-.39 0-.779-.023-1.17-.067a13.995 13.995 0 0021.68-11.732c0-.21-.004-.42-.015-.63A9.935 9.935 0 0024 4.59z"/>
+                            </svg>
+                        </a>
+                        <a href="#" class="social-icon">
+                            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M12 0C5.37 0 0 5.37 0 12c0 5.302 3.438 9.8 8.205 11.387.6.113.82-.26.82-.58 0-.287-.01-1.05-.015-2.06-3.338.726-4.042-1.61-4.042-1.61-.546-1.387-1.333-1.756-1.333-1.756-1.09-.745.082-.73.082-.73 1.205.085 1.838 1.237 1.838 1.237 1.07 1.834 2.807 1.304 3.492.997.108-.775.418-1.305.762-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.4 3-.405 1.02.005 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 21.795 24 17.3 24 12c0-6.63-5.37-12-12-12z"/>
+                            </svg>
+                        </a>
+                    </div>
+                </div>
+                
+                <!-- Features Column -->
+                <div class="space-y-3">
+                    <h4 class="text-lg font-semibold text-white">Features</h4>
+                    <ul class="space-y-2 text-sm text-gray-400">
+                        <li class="hover:text-indigo-400 transition cursor-pointer">✓ HEX Color Extraction</li>
+                        <li class="hover:text-indigo-400 transition cursor-pointer">✓ RGB/RGBA Support</li>
+                        <li class="hover:text-indigo-400 transition cursor-pointer">✓ HSL Color Detection</li>
+                        <li class="hover:text-indigo-400 transition cursor-pointer">✓ Named Colors</li>
+                        <li class="hover:text-indigo-400 transition cursor-pointer">✓ CSS Parser</li>
+                    </ul>
+                </div>
+                
+                <!-- Resources Column -->
+                <div class="space-y-3">
+                    <h4 class="text-lg font-semibold text-white">Resources</h4>
+                    <ul class="space-y-2 text-sm text-gray-400">
+                        <li class="hover:text-indigo-400 transition cursor-pointer">📖 Documentation</li>
+                        <li class="hover:text-indigo-400 transition cursor-pointer">🎨 Color Guide</li>
+                        <li class="hover:text-indigo-400 transition cursor-pointer">💻 API Reference</li>
+                        <li class="hover:text-indigo-400 transition cursor-pointer">🐛 Report Issue</li>
+                    </ul>
+                </div>
+                
+                <!-- Newsletter Column -->
+                <div class="space-y-3">
+                    <h4 class="text-lg font-semibold text-white">Stay Updated</h4>
+                    <p class="text-gray-400 text-sm">Get the latest updates about new features.</p>
+                    <div class="flex flex-col space-y-2">
+                        <input type="email" placeholder="Enter your email" 
+                               class="px-4 py-2 bg-gray-700/50 border border-gray-600 rounded-lg text-sm focus:outline-none focus:border-indigo-500 transition">
+                        <button class="bg-indigo-600 hover:bg-indigo-700 px-4 py-2 rounded-lg text-sm font-semibold transition duration-300">
+                            Subscribe
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Divider -->
+            <div class="border-t border-gray-700 mt-10 pt-6">
+                <div class="flex flex-col md:flex-row justify-between items-center text-sm text-gray-400">
+                    <div class="flex items-center space-x-2">
+                        <span>© 2026 Jack Dev</span>
+                        <span>•</span>
+                        <span>Chromaly Color Extractor</span>
+                    </div>
+                    <div class="flex space-x-6 mt-2 md:mt-0">
+                        <a href="#" class="hover:text-indigo-400 transition">Privacy Policy</a>
+                        <a href="#" class="hover:text-indigo-400 transition">Terms of Service</a>
+                        <a href="#" class="hover:text-indigo-400 transition">Contact</a>
+                    </div>
+                </div>
+                <div class="text-center text-xs text-gray-500 mt-4">
+                    <p>Made with -- by Jack Dev | Professional Color Extraction Tool</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        let modalToastTimeout = null;
+        let modalProgressInterval = null;
+        
+        function showModalToast(message, subMessage = '', type = 'success') {
+            const modalToast = document.getElementById('modalToast');
+            const modalToastIcon = document.getElementById('modalToastIcon');
+            const modalToastMessage = document.getElementById('modalToastMessage');
+            const modalToastSubMessage = document.getElementById('modalToastSubMessage');
+            const modalToastBg = document.getElementById('modalToastBg');
+            const progressBar = document.getElementById('modalToastProgress');
+            
+            // Clear existing timeouts
+            if (modalToastTimeout) clearTimeout(modalToastTimeout);
+            if (modalProgressInterval) clearInterval(modalProgressInterval);
+            
+            // Set styling based on type
+            const toastTypes = {
+                success: { icon: '✅', class: 'modal-toast-success' },
+                error: { icon: '❌', class: 'modal-toast-error' },
+                info: { icon: 'ℹ️', class: 'modal-toast-info' }
+            };
+            
+            const selected = toastTypes[type] || toastTypes.success;
+            modalToastIcon.innerHTML = selected.icon;
+            modalToastBg.className = `p-6 ${selected.class}`;
+            
+            modalToastMessage.innerText = message;
+            modalToastSubMessage.innerText = subMessage;
+            
+            // Show modal
+            modalToast.classList.remove('hidden');
+            
+            // Animate progress bar
+            progressBar.style.width = '100%';
+            let width = 100;
+            
+            modalProgressInterval = setInterval(() => {
+                if (width <= 0) {
+                    clearInterval(modalProgressInterval);
+                } else {
+                    width -= 2;
+                    progressBar.style.width = width + '%';
+                }
+            }, 60);
+            
+            // Auto close after 3 seconds
+            modalToastTimeout = setTimeout(() => {
+                closeModalToast();
+            }, 3000);
+        }
+        
+        function closeModalToast() {
+            const modalToast = document.getElementById('modalToast');
+            modalToast.classList.add('hidden');
+            
+            if (modalProgressInterval) {
+                clearInterval(modalProgressInterval);
+            }
+            if (modalToastTimeout) {
+                clearTimeout(modalToastTimeout);
+            }
+        }
+        
+        function copyColor(color, event) {
+            navigator.clipboard.writeText(color).then(() => {
+                // Show centered modal toast
+                showModalToast('Color Copied!', `${color} - Ready to use`, 'success');
+                
+                // Visual feedback on clicked element
+                const target = event?.target?.closest('.cursor-pointer, .color-card');
+                if (target) {
+                    target.style.transform = 'scale(0.98)';
+                    setTimeout(() => target.style.transform = 'scale(1)', 150);
+                }
+            }).catch(() => {
+                showModalToast('Copy Failed', 'Please try again', 'error');
+            });
+        }
+        
+        // Close modal when clicking outside (optional)
+        document.getElementById('modalToast')?.addEventListener('click', function(e) {
+            if (e.target === this) {
+                closeModalToast();
+            }
+        });
+    </script>
+</body>
+</html>

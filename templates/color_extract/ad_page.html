@@ -1,0 +1,373 @@
+{% extends 'color_extract/base.html' %}
+
+{% block title %}Please Wait - Chromaly{% endblock %}
+
+{% block content %}
+<div class="max-w-3xl mx-auto">
+    <div class="bg-white rounded-2xl shadow-xl overflow-hidden">
+        <!-- Ad Header -->
+        <div class="bg-gradient-to-r from-yellow-500 to-orange-500 px-6 py-4">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center gap-2">
+                    <span class="text-2xl">📢</span>
+                    <h2 class="text-xl font-bold text-white">Complete One Offer to Continue</h2>
+                </div>
+                <span class="text-xs bg-white/20 px-2 py-1 rounded-full text-white">Required Step</span>
+            </div>
+        </div>
+        
+        <!-- Ad Content -->
+        <div class="p-6">
+            <!-- Instruction Message -->
+            <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
+                <div class="flex items-center gap-3">
+                    <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                    <div>
+                        <p class="text-blue-800 font-semibold">Please click on any advertisement below to continue</p>
+                        <p class="text-blue-600 text-sm">After clicking, you'll be redirected to your results in 10 seconds</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- File Processing Status -->
+            <div class="text-center mb-6">
+                <p class="text-sm text-gray-500 mb-2">
+                    Your file: <span class="font-semibold text-indigo-600">{{ filename }}</span>
+                    ({{ file_size|filesizeformat }})
+                </p>
+                <div class="w-full bg-gray-200 rounded-full h-2">
+                    <div id="progressBar" class="bg-green-500 h-2 rounded-full transition-all duration-1000" style="width: 0%"></div>
+                </div>
+            </div>
+
+            <!-- Ad Options - User MUST click one of these -->
+            <div class="space-y-4 mb-6">
+                <h3 class="text-lg font-semibold text-gray-800 text-center mb-3">Choose an offer to unlock your results:</h3>
+                
+                <!-- Offer 1 - Big Banner -->
+                <div class="offer-card" data-offer="banner">
+                    <a href="https://www.profitablecpmratenetwork.com/qdv0y3qv?key=cc22cc00a12b6b80eb8693a1a2b355bc" 
+                       target="_blank" 
+                       rel="sponsored nofollow"
+                       class="ad-link block"
+                       data-offer-id="1">
+                        <div class="bg-gradient-to-r from-blue-600 to-indigo-600 rounded-xl p-6 text-white hover:scale-[1.02] transition-all duration-300 shadow-lg">
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center gap-4">
+                                    <div class="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center">
+                                        <span class="text-3xl">🎨</span>
+                                    </div>
+                                    <div>
+                                        <h4 class="text-xl font-bold">Premium Web Design</h4>
+                                        <p class="text-blue-100 text-sm">Get 70% OFF + Free Domain</p>
+                                    </div>
+                                </div>
+                                <div class="bg-white/20 px-4 py-2 rounded-full text-sm font-semibold animate-pulse">
+                                    Click to Claim →
+                                </div>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+
+                <!-- Offer 2 - Claim Reward Card -->
+                <div class="offer-card" data-offer="reward">
+                    <a href="https://www.profitablecpmratenetwork.com/qdv0y3qv?key=cc22cc00a12b6b80eb8693a1a2b355bc" 
+                       target="_blank" 
+                       rel="sponsored nofollow"
+                       class="ad-link block"
+                       data-offer-id="2">
+                        <div class="bg-gradient-to-r from-green-500 to-emerald-600 rounded-xl p-5 text-white hover:scale-[1.02] transition-all duration-300 shadow-lg">
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center gap-3">
+                                    <span class="text-3xl">🎁</span>
+                                    <div>
+                                        <h4 class="text-lg font-bold">Claim Your Reward</h4>
+                                        <p class="text-green-100 text-sm">Free Gift Card + Bonus Points</p>
+                                    </div>
+                                </div>
+                                <div class="bg-white/20 px-4 py-2 rounded-full text-sm font-semibold">
+                                    Get Reward →
+                                </div>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+
+                <!-- Offer 3 - Earn Money Card -->
+                <div class="offer-card" data-offer="money">
+                    <a href="https://www.profitablecpmratenetwork.com/qdv0y3qv?key=cc22cc00a12b6b80eb8693a1a2b355bc" 
+                       target="_blank" 
+                       rel="sponsored nofollow"
+                       class="ad-link block"
+                       data-offer-id="3">
+                        <div class="bg-gradient-to-r from-pink-500 to-rose-600 rounded-xl p-5 text-white hover:scale-[1.02] transition-all duration-300 shadow-lg">
+                            <div class="flex items-center justify-between">
+                                <div class="flex items-center gap-3">
+                                    <span class="text-3xl">💰</span>
+                                    <div>
+                                        <h4 class="text-lg font-bold">Make Money Online</h4>
+                                        <p class="text-pink-100 text-sm">Earn $500+ Weekly from Home</p>
+                                    </div>
+                                </div>
+                                <div class="bg-white/20 px-4 py-2 rounded-full text-sm font-semibold">
+                                    Learn How →
+                                </div>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+
+                <!-- Offer 4 - Small Square Ad -->
+                <div class="grid grid-cols-2 gap-3 mt-4">
+                    <div class="offer-card" data-offer="gift">
+                        <a href="https://www.profitablecpmratenetwork.com/qdv0y3qv?key=cc22cc00a12b6b80eb8693a1a2b355bc" 
+                           target="_blank" 
+                           rel="sponsored nofollow"
+                           class="ad-link block"
+                           data-offer-id="4">
+                            <div class="bg-gradient-to-r from-purple-500 to-violet-600 rounded-xl p-4 text-center text-white hover:scale-105 transition-all duration-300">
+                                <span class="text-2xl">🎯</span>
+                                <p class="font-semibold text-sm mt-1">Exclusive Deal</p>
+                                <p class="text-xs text-purple-200">Limited Time</p>
+                            </div>
+                        </a>
+                    </div>
+                    <div class="offer-card" data-offer="bonus">
+                        <a href="https://www.profitablecpmratenetwork.com/qdv0y3qv?key=cc22cc00a12b6b80eb8693a1a2b355bc" 
+                           target="_blank" 
+                           rel="sponsored nofollow"
+                           class="ad-link block"
+                           data-offer-id="5">
+                            <div class="bg-gradient-to-r from-orange-500 to-red-600 rounded-xl p-4 text-center text-white hover:scale-105 transition-all duration-300">
+                                <span class="text-2xl">⭐</span>
+                                <p class="font-semibold text-sm mt-1">Bonus Offer</p>
+                                <p class="text-xs text-orange-200">Click Here</p>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Timer and Status Section -->
+            <div class="border-t border-gray-200 pt-5 mt-4">
+                <div id="waitingMessage" class="text-center">
+                    <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+                        <div class="flex items-center justify-center gap-3">
+                            <svg class="w-6 h-6 text-yellow-600 animate-bounce" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                            </svg>
+                            <p class="text-yellow-800 font-medium">Click on any offer above to unlock your results</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="timerMessage" class="text-center hidden">
+                    <div class="bg-green-50 border border-green-200 rounded-lg p-4">
+                        <p class="text-green-800 font-semibold mb-2">✓ Offer completed! Redirecting...</p>
+                        <div class="flex items-center justify-center gap-3">
+                            <svg class="w-5 h-5 text-green-600 animate-spin" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                            </svg>
+                            <p class="text-green-700">Please wait <span id="timer" class="font-bold text-xl mx-1">10</span> seconds...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    (function() {
+        // Configuration
+        const AD_LINK = "https://www.profitablecpmratenetwork.com/qdv0y3qv?key=cc22cc00a12b6b80eb8693a1a2b355bc";
+        let seconds = 10;
+        let timerInterval = null;
+        let adClicked = false;
+        let progressInterval = null;
+        
+        // DOM Elements
+        const timerSpan = document.getElementById('timer');
+        const waitingMessage = document.getElementById('waitingMessage');
+        const timerMessage = document.getElementById('timerMessage');
+        const progressBar = document.getElementById('progressBar');
+        
+        // Track which offer was clicked
+        let clickedOffer = null;
+        
+        // Animate progress bar
+        function animateProgressBar() {
+            if (progressBar) {
+                progressBar.style.width = '100%';
+            }
+        }
+        
+        // Submit form to redirect to results
+        function redirectToResults() {
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = "{% url 'extract_colors' %}";
+            form.style.display = 'none';
+            
+            // Add CSRF token
+            const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]')?.value;
+            if (csrfToken) {
+                const csrfInput = document.createElement('input');
+                csrfInput.type = 'hidden';
+                csrfInput.name = 'csrfmiddlewaretoken';
+                csrfInput.value = csrfToken;
+                form.appendChild(csrfInput);
+            }
+            
+            // Add ad_shown field
+            const adShownInput = document.createElement('input');
+            adShownInput.type = 'hidden';
+            adShownInput.name = 'ad_shown';
+            adShownInput.value = 'true';
+            form.appendChild(adShownInput);
+            
+            // Add clicked offer info
+            const offerInput = document.createElement('input');
+            offerInput.type = 'hidden';
+            offerInput.name = 'clicked_offer';
+            offerInput.value = clickedOffer || 'unknown';
+            form.appendChild(offerInput);
+            
+            document.body.appendChild(form);
+            form.submit();
+        }
+        
+        // Start countdown after ad click
+        function startCountdown() {
+            if (timerInterval) clearInterval(timerInterval);
+            
+            // Animate progress bar
+            animateProgressBar();
+            
+            // Show timer message, hide waiting message
+            waitingMessage.classList.add('hidden');
+            timerMessage.classList.remove('hidden');
+            
+            timerInterval = setInterval(() => {
+                seconds--;
+                if (timerSpan) timerSpan.textContent = seconds;
+                
+                if (seconds <= 0) {
+                    clearInterval(timerInterval);
+                    timerInterval = null;
+                    redirectToResults();
+                }
+            }, 1000);
+        }
+        
+        // Handle ad click
+        function handleAdClick(offerId, event) {
+            if (adClicked) {
+                // Prevent multiple clicks
+                event.preventDefault();
+                return false;
+            }
+            
+            adClicked = true;
+            clickedOffer = offerId;
+            
+            console.log(`Ad clicked: Offer ${offerId} at ${new Date().toISOString()}`);
+            
+            // Track ad click to backend
+            fetch('/api/track-ad-click/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]')?.value || ''
+                },
+                body: JSON.stringify({
+                    timestamp: new Date().toISOString(),
+                    offer_id: offerId,
+                    url: window.location.href
+                })
+            }).catch(err => console.log('Analytics error:', err));
+            
+            // Start the 10 second countdown
+            startCountdown();
+            
+            // Allow the link to open in new tab
+            return true;
+        }
+        
+        // Attach click listeners to all ad links
+        function attachAdListeners() {
+            const adLinks = document.querySelectorAll('.ad-link');
+            adLinks.forEach(link => {
+                const offerCard = link.closest('.offer-card');
+                const offerId = offerCard ? offerCard.getAttribute('data-offer') : 'unknown';
+                
+                link.addEventListener('click', function(e) {
+                    if (!handleAdClick(offerId, e)) {
+                        e.preventDefault();
+                        return false;
+                    }
+                });
+            });
+        }
+        
+        // Track page view
+        function trackPageView() {
+            fetch('/api/track-ad-view/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    timestamp: new Date().toISOString(),
+                    url: window.location.href,
+                    referrer: document.referrer
+                })
+            }).catch(err => console.log('View tracking error:', err));
+        }
+        
+        // Initialize
+        function init() {
+            attachAdListeners();
+            trackPageView();
+        }
+        
+        // Start everything when DOM is ready
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', init);
+        } else {
+            init();
+        }
+    })();
+</script>
+
+<style>
+    .offer-card {
+        transition: all 0.3s ease;
+    }
+    .offer-card:hover {
+        transform: translateY(-2px);
+    }
+    .ad-link {
+        cursor: pointer;
+        display: block;
+        text-decoration: none;
+    }
+    @keyframes spin {
+        to { transform: rotate(360deg); }
+    }
+    .animate-spin {
+        animation: spin 1s linear infinite;
+    }
+    .animate-bounce {
+        animation: bounce 1s ease infinite;
+    }
+    @keyframes bounce {
+        0%, 100% { transform: translateY(0); }
+        50% { transform: translateY(-5px); }
+    }
+</style>
+{% endblock %}
