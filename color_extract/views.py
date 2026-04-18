@@ -25,6 +25,11 @@ def extract_colors(request):
             uploaded_file = request.FILES['file']
             filename = uploaded_file.name
             
+            # ফাইল সাইজ চেক (10MB limit)
+            if uploaded_file.size > 10 * 1024 * 1024:
+                messages.error(request, 'File too large! Maximum size is 10MB.')
+                return redirect('home')
+            
             # Store file info in session temporarily
             request.session['pending_file'] = {
                 'name': filename,
@@ -49,37 +54,57 @@ def extract_colors(request):
             filename = pending_file['name']
             file_content = pending_file['content']
             
-            # Clear session after processing
-            if 'pending_file' in request.session:
-                del request.session['pending_file']
-                request.session.modified = True
-            
             # ফাইল টাইপ চেক
             is_html = filename.lower().endswith(('.html', '.htm'))
             is_css = filename.lower().endswith('.css')
             
             if not (is_html or is_css):
                 messages.error(request, 'Only .html, .htm or .css files allowed!')
+                # Clear session on error
+                if 'pending_file' in request.session:
+                    del request.session['pending_file']
+                    request.session.modified = True
                 return redirect('home')
             
             try:
                 # ফাইল টাইপ অনুযায়ী এক্সট্রাক্ট
                 if is_html:
-                    colors = extract_colors_from_html(file_content)
+                    colors_dict = extract_colors_from_html(file_content)
                     file_type = 'HTML'
                 else:
-                    colors = extract_colors_from_css(file_content)
+                    colors_dict = extract_colors_from_css(file_content)
                     file_type = 'CSS'
                 
-                return render(request, 'color_extract/result.html', {
-                    'colors': colors,
-                    'filename': filename,
-                    'file_type': file_type,
-                    'total_count': colors['total_count']
-                })
+                # Clear session after successful processing
+                if 'pending_file' in request.session:
+                    del request.session['pending_file']
+                    request.session.modified = True
+                
+                # Check if colors_dict is a dictionary (from your utils)
+                if isinstance(colors_dict, dict):
+                    # Your utils returns dictionary format
+                    return render(request, 'color_extract/result.html', {
+                        'colors': colors_dict,
+                        'filename': filename,
+                        'file_type': file_type,
+                        'total_count': colors_dict.get('total_count', 0)
+                    })
+                else:
+                    # If it returns list format (fallback)
+                    all_colors = list(set(colors_dict)) if colors_dict else []
+                    return render(request, 'color_extract/result.html', {
+                        'colors': all_colors,
+                        'filename': filename,
+                        'file_type': file_type,
+                        'total_count': len(all_colors)
+                    })
                 
             except Exception as e:
-                messages.error(request, f'Error: {str(e)}')
+                messages.error(request, f'Error extracting colors: {str(e)}')
+                # Clear session on error
+                if 'pending_file' in request.session:
+                    del request.session['pending_file']
+                    request.session.modified = True
                 return redirect('home')
     
     return redirect('home')
