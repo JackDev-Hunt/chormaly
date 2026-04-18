@@ -4,14 +4,16 @@ import dj_database_url
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-# এনভায়রনমেন্ট ভেরিয়েবল
+
 SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-temp-key-for-dev')
 DEBUG = os.environ.get('DEBUG', 'False') == 'True'
 
-# ALLOWED_HOSTS - Render ডোমেইন অটো অ্যাড হবে
+
 ALLOWED_HOSTS = ['localhost', '127.0.0.1', '.onrender.com']
+
 if os.environ.get('ALLOWED_HOSTS'):
     ALLOWED_HOSTS.extend(os.environ.get('ALLOWED_HOSTS').split(','))
+
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -74,13 +76,13 @@ TIME_ZONE = 'Asia/Dhaka'
 USE_I18N = True
 USE_TZ = True
 
-# স্ট্যাটিক ফাইল
+
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [BASE_DIR / 'static']
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
-# মিডিয়া ফাইল
+
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 

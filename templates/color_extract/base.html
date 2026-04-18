@@ -204,7 +204,8 @@
                 <!-- Logo Section - Fixed with robust fallback -->
                 <div class="flex items-center space-x-4">
                     <div class="logo" id="logoContainer">
-                        <!-- Primary: try to load static image, with inline error handler that replaces with beautiful fallback -->
+                         {% load static %}
+                         <!-- Primary: try to load static image, with inline error handler that replaces with beautiful fallback -->
                         <img src="{% static 'images/colorsift.png' %}" 
                              alt="Chromaly Logo" 
                              class="logo-img"
