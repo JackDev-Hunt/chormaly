@@ -136,6 +136,35 @@
         .progress-bar {
             transition: width 0.05s linear;
         }
+        
+        /* Logo fallback container */
+        .logo-fallback {
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+            transition: all 0.3s ease;
+        }
+        
+        .logo-fallback span {
+            font-size: 28px;
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.2));
+        }
+        
+        /* Ensure the logo container handles image errors gracefully */
+        .logo-img {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            object-fit: cover;
+            background: white;
+            padding: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
     </style>
 </head>
 <body class="bg-gradient-to-br from-gray-50 to-gray-100">
@@ -172,13 +201,19 @@
         
         <div class="container mx-auto px-6 py-5 relative z-10">
             <div class="flex justify-between items-center">
-                <!-- Logo Section -->
+                <!-- Logo Section - Fixed with robust fallback -->
                 <div class="flex items-center space-x-4">
-                    <div class="logo">
+                    <div class="logo" id="logoContainer">
+                        <!-- Primary: try to load static image, with inline error handler that replaces with beautiful fallback -->
                         <img src="{% static 'images/colorsift.png' %}" 
                              alt="Chromaly Logo" 
-                             class="w-12 h-12 rounded-full bg-white p-2 shadow-lg"
-                             onerror="this.src='https://img.icons8.com/color/96/000000/color-wheel.png'">
+                             class="logo-img"
+                             id="mainLogo"
+                             onerror="this.onerror=null; this.style.display='none'; document.getElementById('logoFallback').style.display='flex';">
+                        <!-- Fallback div (hidden initially) - elegant emoji + gradient circle -->
+                        <div id="logoFallback" class="logo-fallback" style="display: none;">
+                            <span>🎨</span>
+                        </div>
                     </div>
                     <div class="flex flex-col">
                         <div class="flex items-center space-x-2">
@@ -214,7 +249,14 @@
 
     <!-- Main Content -->
     <main class="container mx-auto px-6 py-12 fade-in">
-        {% block content %}{% endblock %}
+        {% block content %}
+        <!-- Default content block hint: Child templates will override -->
+        <div class="text-center py-20">
+            <div class="text-6xl mb-6">🎨</div>
+            <h2 class="text-3xl font-bold text-gray-800 mb-4">Extract Colors Instantly</h2>
+            <p class="text-gray-600 max-w-2xl mx-auto">Upload HTML/CSS files or paste code to extract every color — HEX, RGB, RGBA, HSL, and named colors.</p>
+        </div>
+        {% endblock %}
     </main>
 
     <!-- Enhanced Professional Footer -->
@@ -306,7 +348,7 @@
                     </div>
                 </div>
                 <div class="text-center text-xs text-gray-500 mt-4">
-                    <p>Made with -- by Jack Dev | Professional Color Extraction Tool</p>
+                    <p>Made with ❤️ by Jack Dev | Professional Color Extraction Tool</p>
                 </div>
             </div>
         </div>
@@ -366,13 +408,15 @@
         
         function closeModalToast() {
             const modalToast = document.getElementById('modalToast');
-            modalToast.classList.add('hidden');
+            if (modalToast) modalToast.classList.add('hidden');
             
             if (modalProgressInterval) {
                 clearInterval(modalProgressInterval);
+                modalProgressInterval = null;
             }
             if (modalToastTimeout) {
                 clearTimeout(modalToastTimeout);
+                modalToastTimeout = null;
             }
         }
         
@@ -392,12 +436,47 @@
             });
         }
         
-        // Close modal when clicking outside (optional)
+        // Close modal when clicking outside
         document.getElementById('modalToast')?.addEventListener('click', function(e) {
             if (e.target === this) {
                 closeModalToast();
             }
         });
+        
+        // Double-layered logo fallback: in case static path fails completely, we already have onerror fallback.
+        // Additional safeguard: if both image and fallback fail (edge case), manually ensure visibility.
+        document.addEventListener('DOMContentLoaded', function() {
+            const logoImg = document.getElementById('mainLogo');
+            const fallbackDiv = document.getElementById('logoFallback');
+            
+            // If image exists but somehow naturalWidth is 0 (failed to load but onerror might not fire in some rare cases)
+            if (logoImg && logoImg.complete && logoImg.naturalWidth === 0) {
+                logoImg.style.display = 'none';
+                if (fallbackDiv) fallbackDiv.style.display = 'flex';
+            }
+            
+            // Also handle if fallbackDiv not rendered due to weird race; ensure logo container has something visible
+            if (logoImg && logoImg.style.display !== 'none' && logoImg.naturalWidth === 0) {
+                logoImg.style.display = 'none';
+                if (fallbackDiv) fallbackDiv.style.display = 'flex';
+            }
+            
+            // Make the fallback interactive and consistent with logo hover effect
+            if (fallbackDiv) {
+                fallbackDiv.addEventListener('mouseenter', function() {
+                    this.style.transform = 'rotate(5deg) scale(1.05)';
+                });
+                fallbackDiv.addEventListener('mouseleave', function() {
+                    this.style.transform = 'rotate(0deg) scale(1)';
+                });
+            }
+        });
+        
+        // Optional: for demo or dynamic content, expose showToast globally for child templates.
+        window.showModalToast = showModalToast;
+        window.copyColor = copyColor;
+        window.closeModalToast = closeModalToast;
     </script>
+    <!-- Additional inline to fix potential 'colorsift.png' not found: The onerror + fallback gradient ensures logo always visible -->
 </body>
 </html>
