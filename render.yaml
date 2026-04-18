@@ -1,0 +1,27 @@
+services:
+  - type: web
+    name: chormaly
+    runtime: python
+    buildCommand: |
+      pip install --upgrade pip
+      pip install -r requirements.txt
+      python manage.py migrate --noinput
+      python manage.py collectstatic --noinput
+    startCommand: gunicorn core.wsgi:application --bind 0.0.0.0:10000
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: chormaly-db
+          property: connectionString
+      - key: DJANGO_SECRET_KEY
+        generateValue: true
+      - key: DEBUG
+        value: false
+      - key: ALLOWED_HOSTS
+        value: chormaly.onrender.com,localhost
+
+databases:
+  - name: chormaly-db
+    databaseName: chormaly_db
+    user: chormaly_user
+    plan: free
