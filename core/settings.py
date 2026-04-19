@@ -4,17 +4,19 @@ import dj_database_url
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-
+# সিক্রেট কী
 SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-temp-key-for-dev')
-DEBUG = os.environ.get('DEBUG', 'False') == 'false'
 
+# ডিবাগ মোড - ঠিক করা হয়েছে
+DEBUG = os.environ.get('DEBUG', 'False').lower() == 'true'
 
+# অলাউড হোস্ট
 ALLOWED_HOSTS = ['localhost', '127.0.0.1', '.onrender.com']
 
 if os.environ.get('ALLOWED_HOSTS'):
     ALLOWED_HOSTS.extend(os.environ.get('ALLOWED_HOSTS').split(','))
 
-
+# ইন্সটলড অ্যাপস
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -22,12 +24,13 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'color_extract',
+    'color_extract',  # আপনার অ্যাপ
 ]
 
+# মিডলওয়্যার
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
-    'whitenoise.middleware.WhiteNoiseMiddleware',  # 🔴 গুরুত্বপূর্ণ
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -56,14 +59,18 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'core.wsgi.application'
 
-
+# ✅ ডাটাবেস কনফিগারেশন - ঠিক করা হয়েছে
+# Render-এ PostgreSQL এর জন্য environment variable থাকবে: DATABASE_URL
+# লোকাল ডেভেলপমেন্টের জন্য SQLite ব্যবহার করবে
 DATABASES = {
     'default': dj_database_url.config(
-        default=f'sqlite:///{BASE_DIR / "db.sqlite3"}',
-        conn_max_age=600
+        default=f'sqlite:///{BASE_DIR}/db.sqlite3',
+        conn_max_age=600,
+        conn_health_checks=True,
     )
 }
 
+# পাসওয়ার্ড ভ্যালিডেশন
 AUTH_PASSWORD_VALIDATORS = [
     {'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator'},
     {'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator'},
@@ -71,25 +78,26 @@ AUTH_PASSWORD_VALIDATORS = [
     {'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator'},
 ]
 
+# আন্তর্জাতিকীকরণ
 LANGUAGE_CODE = 'bn-bd'
 TIME_ZONE = 'Asia/Dhaka'
 USE_I18N = True
 USE_TZ = True
 
-
+# স্ট্যাটিক ফাইল
 STATIC_URL = '/static/'
 STATICFILES_DIRS = [BASE_DIR / 'static']
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
-
+# মিডিয়া ফাইল
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 DATA_UPLOAD_MAX_NUMBER_FIELDS = 10240
 
-# লগিং কনফিগারেশন যোগ করুন
+# লগিং
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
@@ -100,6 +108,6 @@ LOGGING = {
     },
     'root': {
         'handlers': ['console'],
-        'level': 'DEBUG',
+        'level': 'INFO',  # DEBUG এর পরিবর্তে INFO ভালো
     },
 }
